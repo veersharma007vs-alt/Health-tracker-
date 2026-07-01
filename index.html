@@ -89,12 +89,6 @@
   button.primary:hover { opacity: 0.85; }
   button.primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  button.ghost {
-    margin-top: 12px; width: 100%; padding: 12px; border: 1px solid var(--line);
-    border-radius: 8px; background: transparent; color: var(--accent);
-    font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px; cursor: pointer;
-  }
-
   .entries { display: flex; flex-direction: column; gap: 10px; }
   .entry {
     border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px;
@@ -113,10 +107,6 @@
   }
   .loading { color: var(--muted); font-style: italic; font-size: 13px; }
 
-  .key-row { display: flex; gap: 8px; }
-  .key-row input { flex: 1; }
-  .key-saved { font-size: 12px; color: var(--good); margin-top: 6px; }
-
   footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 40px; }
 </style>
 </head>
@@ -131,16 +121,6 @@
 
   <div class="disclaimer">
     <strong>Not medical advice.</strong> Daybook helps you notice patterns in your own data. It does not diagnose, treat, or replace a conversation with a qualified healthcare provider. If something feels urgent, contact a doctor.
-  </div>
-
-  <div class="card">
-    <h2>Groq API key</h2>
-    <p class="sub" style="margin-bottom:0;">Stored only in your browser, never sent anywhere except Groq's API.</p>
-    <div class="key-row" style="margin-top:14px;">
-      <input type="text" id="apiKey" placeholder="Paste your Groq API key (gsk_...)">
-      <button class="ghost" style="margin-top:0; width:auto; padding:0 16px;" onclick="saveKey()">Save</button>
-    </div>
-    <div class="key-saved" id="keyStatus"></div>
   </div>
 
   <div class="card">
@@ -190,15 +170,12 @@
 </div>
 
 <script>
+const GROQ_KEY = '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';
+
 let entries = JSON.parse(localStorage.getItem('daybook_entries') || '[]');
 let selectedMood = '';
 
 document.getElementById('entryDate').valueAsDate = new Date();
-
-document.getElementById('apiKey').value = localStorage.getItem('daybook_groq_key') || '';
-if (localStorage.getItem('daybook_groq_key')) {
-  document.getElementById('keyStatus').textContent = 'Key loaded from this browser.';
-}
 
 document.querySelectorAll('.mood-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -207,13 +184,6 @@ document.querySelectorAll('.mood-btn').forEach(btn => {
     selectedMood = btn.dataset.mood;
   });
 });
-
-function saveKey() {
-  const key = document.getElementById('apiKey').value.trim();
-  if (!key) return;
-  localStorage.setItem('daybook_groq_key', key);
-  document.getElementById('keyStatus').textContent = 'Saved.';
-}
 
 function addEntry() {
   const date = document.getElementById('entryDate').value;
@@ -262,14 +232,9 @@ function escapeHtml(s) {
 }
 
 async function generateSummary() {
-  const key = localStorage.getItem('daybook_groq_key');
   const output = document.getElementById('summaryOutput');
   const btn = document.getElementById('summaryBtn');
 
-  if (!key) {
-    output.innerHTML = '<div class="summary-box">Add your Groq API key above first.</div>';
-    return;
-  }
   if (entries.length === 0) {
     output.innerHTML = '<div class="summary-box">Log a few entries first, then generate a summary.</div>';
     return;
@@ -293,7 +258,7 @@ ${dataText}`;
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${key}`
+        'Authorization': `Bearer ${GROQ_KEY}`
       },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
@@ -312,7 +277,7 @@ ${dataText}`;
     const text = data.choices?.[0]?.message?.content || 'No summary generated.';
     output.innerHTML = `<div class="summary-box">${escapeHtml(text)}</div>`;
   } catch (err) {
-    output.innerHTML = `<div class="summary-box">Request failed: ${escapeHtml(err.message)}. Check your API key and connection.</div>`;
+    output.innerHTML = `<div class="summary-box">Request failed: ${escapeHtml(err.message)}. Check your connection.</div>`;
   }
 
   btn.disabled = false;
