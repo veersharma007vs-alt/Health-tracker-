@@ -1,1 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SehatAI — Aapka Personal Health Assistant</title>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1162CB4YW6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-1162CB4YW6');
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Lora:wght@400;600&display=swap');
+:root {
+  --bg:#F0F7FF;--card:#FFFFFF;--ink:#1A2B3C;--muted:#5A7A9A;
+  --line:#D0E4F7;--accent:#1A6EBD;--accent2:#0D9488;
+  --warn:#F59E0B;--good:#10B981;--radius:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--ink);font-family:'Nunito',sans-serif;min-height:100vh;}
+.header{background:linear-gradient(135deg,#1A6EBD 0%,#0D9488 100%);padding:20px;color:white;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(26,110,189,0.3);}
+.header-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{font-size:28px;}
+.logo-text{font-family:'Lora',serif;font-size:22px;font-weight:600;}
+.logo-sub{font-size:11px;opacity:0.8;letter-spacing:0.05em;}
+.lang-toggle{background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);color:white;border-radius:20px;padding:6px 14px;font-size:13px;font-family:'Nunito',sans-serif;font-weight:700;cursor:pointer;}
+.nav{background:white;border-bottom:1px solid var(--line);position:sticky;top:70px;z-index:99;}
+.nav-inner{max-width:720px;margin:0 auto;display:flex;overflow-x:auto;scrollbar-width:none;}
+.nav-inner::-webkit-scrollbar{display:none;}
+.nav-tab{padding:14px 20px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:all 0.2s;}
+.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.main{max-width:720px;margin:0 auto;padding:20px;}
+.disclaimer{background:#FFF7ED;border:1px solid #FED7AA;border-left:4px solid var(--warn);border-radius:12px;padding:14px 16px;font-size:13px;color:#92400E;margin-bottom:20px;line-height:1.5;}
+.card{background:var(--card);border-radius:var(--radius);padding:24px;margin-bottom:16px;box-shadow:0 2px 8px rgba(26,110,189,0.08);border:1px solid var(--line);}
+.card-title{font-family:'Lora',serif;font-size:18px;font-weight:600;color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+label{display:block;font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;margin-top:14px;}
+label:first-of-type{margin-top:0;}
+input[type=text],input[type=number],input[type=date],textarea,select{width:100%;padding:11px 14px;border:1.5px solid var(--line);border-radius:10px;font-family:'Nunito',sans-serif;font-size:14px;background:#FAFCFF;color:var(--ink);transition:border-color 0.2s;}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);background:white;}
+textarea{resize:vertical;min-height:70px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.mood-grid{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;}
+.mood-btn{flex:1;min-width:52px;padding:10px 4px;text-align:center;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;font-size:11px;font-weight:700;color:var(--muted);background:#FAFCFF;transition:all 0.15s;line-height:1.4;}
+.mood-btn .emoji{font-size:20px;display:block;margin-bottom:2px;}
+.mood-btn.selected{border-color:var(--accent);background:#EFF6FF;color:var(--accent);}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.chip{padding:7px 14px;border-radius:20px;border:1.5px solid var(--line);font-size:12px;font-weight:700;cursor:pointer;background:#FAFCFF;color:var(--muted);transition:all 0.15s;}
+.chip.selected{background:#EFF6FF;border-color:var(--accent);color:var(--accent);}
+.btn-primary{width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#1A6EBD,#0D9488);color:white;font-family:'Nunito',sans-serif;font-weight:800;font-size:15px;cursor:pointer;margin-top:20px;transition:opacity 0.2s;box-shadow:0 4px 12px rgba(26,110,189,0.3);}
+.btn-primary:hover{opacity:0.9;}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed;}
+.btn-outline{width:100%;padding:12px;border:2px solid var(--accent);border-radius:12px;background:transparent;color:var(--accent);font-family:'Nunito',sans-serif;font-weight:800;font-size:14px;cursor:pointer;margin-top:10px;transition:all 0.2s;}
+.btn-outline:hover{background:#EFF6FF;}
+.ai-box{background:linear-gradient(135deg,#EFF6FF,#F0FDF9);border:1px solid #BFDBFE;border-radius:14px;padding:20px;margin-top:16px;}
+.ai-header{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--accent);font-size:14px;margin-bottom:12px;}
+.ai-body{font-size:14px;line-height:1.7;color:var(--ink);white-space:pre-wrap;}
+.entry-card{border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:10px;background:#FAFCFF;}
+.entry-date{font-size:12px;font-weight:800;color:var(--accent);margin-bottom:8px;}
+.entry-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.entry-tag{font-size:11px;padding:3px 10px;border-radius:20px;background:#EFF6FF;color:var(--accent);font-weight:700;}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;}
+.empty-state .icon{font-size:40px;margin-bottom:10px;}
+.loading{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:14px;padding:16px 0;}
+.dot-pulse{display:flex;gap:4px;}
+.dot-pulse span{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 1.2s infinite;}
+.dot-pulse span:nth-child(2){animation-delay:0.2s;}
+.dot-pulse span:nth-child(3){animation-delay:0.4s;}
+@keyframes pulse{0%,80%,100%{opacity:0.2}40%{opacity:1}}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.stat-box{background:white;border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center;}
+.stat-num{font-size:24px;font-weight:800;color:var(--accent);}
+.stat-label{font-size:11px;color:var(--muted);font-weight:700;margin-top:2px;}
+.page{display:none;}
+.page.active{display:block;}
+</style>
+</head>
+  <body>
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">🩺</div>
+      <div>
+        <div class="logo-text">SehatAI</div>
+        <div class="logo-sub">AI HEALTH ASSISTANT</div>
+      </div>
+    </div>
+    <button class="lang-toggle" onclick="toggleLang()"><span id="langBtn">हिंदी</span></button>
+  </div>
+</div>
+<div class="nav">
+  <div class="nav-inner">
+    <div class="nav-tab active" onclick="showPage('log')" id="tab-log">📝 <span class="t" data-en="Log Today" data-hi="आज का लॉग">Log Today</span></div>
+    <div class="nav-tab" onclick="showPage('analysis')" id="tab-analysis">🧠 <span class="t" data-en="AI Analysis" data-hi="AI विश्लेषण">AI Analysis</span></div>
+    <div class="nav-tab" onclick="showPage('history')" id="tab-history">📅 <span class="t" data-en="History" data-hi="इतिहास">History</span></div>
+    <div class="nav-tab" onclick="showPage('doctor')" id="tab-doctor">👨‍⚕️ <span class="t" data-en="Doctor Summary" data-hi="डॉक्टर सारांश">Doctor Summary</span></div>
+  </div>
+</div>
+<div class="main">
+  <div class="disclaimer">
+    ⚠️ <strong><span class="t" data-en="Not a substitute for medical advice." data-hi="यह चिकित्सीय सलाह का विकल्प नहीं है।">Not a substitute for medical advice.</span></strong>
+    <span class="t" data-en="SehatAI identifies patterns in your data. Always consult a real doctor." data-hi="SehatAI आपके डेटा में पैटर्न पहचानता है। हमेशा असली डॉक्टर से मिलें।">SehatAI identifies patterns in your data. Always consult a real doctor.</span>
+  </div>
+  <div class="page active" id="page-log">
+    <div class="card">
+      <div class="card-title">⚙️ <span class="t" data-en="Setup" data-hi="सेटअप">Setup</span></div>
+      <label><span class="t" data-en="Health Condition" data-hi="स्वास्थ्य स्थिति">Health Condition</span></label>
+      <select id="condition" onchange="saveCondition()">
+        <option value="general">🏥 General / सामान्य</option>
+        <option value="diabetes">🩸 Diabetes / मधुमेह</option>
+        <option value="bp">❤️ Blood Pressure / रक्तचाप</option>
+        <option value="pregnancy">🤰 Pregnancy / गर्भावस्था</option>
+        <option value="digestion">🫄 Digestion / पाचन</option>
+        <option value="anxiety">🧠 Anxiety/Stress / चिंता</option>
+      </select>
+      <label><span class="t" data-en="Date" data-hi="तारीख">Date</span></label>
+      <input type="date" id="entryDate">
+    </div>
+    <div class="card">
+      <div class="card-title">😊 <span class="t" data-en="Mood & Energy" data-hi="मूड और ऊर्जा">Mood & Energy</span></div>
+      <label><span class="t" data-en="How are you feeling?" data-hi="आप कैसा महसूस कर रहे हैं?">How are you feeling?</span></label>
+      <div class="mood-grid">
+        <div class="mood-btn" data-mood="Very Bad" data-moodhi="बहुत बुरा" onclick="selectMood(this)"><span class="emoji">😞</span><span class="mood-label t" data-en="Very Bad" data-hi="बहुत बुरा">Very Bad</span></div>
+        <div class="mood-btn" data-mood="Bad" data-moodhi="बुरा" onclick="selectMood(this)"><span class="emoji">😕</span><span class="mood-label t" data-en="Bad" data-hi="बुरा">Bad</span></div>
+        <div class="mood-btn" data-mood="Okay" data-moodhi="ठीक" onclick="selectMood(this)"><span class="emoji">😐</span><span class="mood-label t" data-en="Okay" data-hi="ठीक">Okay</span></div>
+        <div class="mood-btn" data-mood="Good" data-moodhi="अच्छा" onclick="selectMood(this)"><span class="emoji">🙂</span><span class="mood-label t" data-en="Good" data-hi="अच्छा">Good</span></div>
+        <div class="mood-btn" data-mood="Very Good" data-moodhi="बहुत अच्छा" onclick="selectMood(this)"><span class="emoji">😄</span><span class="mood-label t" data-en="Very Good" data-hi="बहुत अच्छा">Very Good</span></div>
+      </div>
+      <div class="grid2" style="margin-top:14px;">
+        <div>
+          <label><span class="t" data-en="Sleep (hours)" data-hi="नींद (घंटे)">Sleep (hours)</span></label>
+          <input type="number" id="sleep" min="0" max="24" step="0.5" placeholder="7">
+        </div>
+        <div>
+          <label><span class="t" data-en="Energy (1-10)" data-hi="ऊर्जा (1-10)">Energy (1-10)</span></label>
+          <input type="number" id="energy" min="1" max="10" placeholder="7">
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🍽️ <span class="t" data-en="Food & Water" data-hi="खाना और पानी">Food & Water</span></div>
+      <label><span class="t" data-en="Morning meal" data-hi="सुबह का खाना">Morning meal</span></label>
+      <input type="text" id="foodMorning" placeholder="e.g. Poha, chai / पोहा, चाय">
+      <label><span class="t" data-en="Afternoon meal" data-hi="दोपहर का खाना">Afternoon meal</span></label>
+      <input type="text" id="foodAfternoon" placeholder="e.g. Dal chawal / दाल चावल">
+      <label><span class="t" data-en="Evening/Night meal" data-hi="शाम/रात का खाना">Evening/Night meal</span></label>
+      <input type="text" id="foodNight" placeholder="e.g. Roti sabzi / रोटी सब्जी">
+      <div class="grid2">
+        <div>
+          <label><span class="t" data-en="Water (glasses)" data-hi="पानी (गिलास)">Water (glasses)</span></label>
+          <input type="number" id="water" min="0" max="20" placeholder="8">
+        </div>
+        <div>
+          <label><span class="t" data-en="Exercise (min)" data-hi="व्यायाम (मिनट)">Exercise (min)</span></label>
+          <input type="number" id="exercise" min="0" placeholder="30">
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🤒 <span class="t" data-en="Symptoms" data-hi="लक्षण">Symptoms</span></div>
+      <label><span class="t" data-en="Select symptoms" data-hi="लक्षण चुनें">Select symptoms</span></label>
+      <div class="chips">
+        <div class="chip" onclick="toggleChip(this)" data-val="Headache|सिरदर्द"><span class="t" data-en="Headache" data-hi="सिरदर्द">Headache</span></div>
+        <div class="chip" onclick="toggleChip(this)" data-val="Stomach Pain|पेट दर्द"><span class="t" data-en="Stomach Pain" data-hi="पेट दर्द">Stomach Pain</span></div>
+        <div class="chip" onclick="toggleChip(this)" data-val="Fatigue|थकान"><span class="t" data-en="Fatigue" data-hi="थकान">Fatigue</span></div>
+        <div class="chip" onclick="toggleChip(this)" data-val="Nausea|मतली"><span class="t" data-en="Nausea" data-hi="मतली">Nausea</span></div>
+        <div class="chip" onclick="toggleChip(this)" data-val="Fever|बुखार"><span class="t" data-en="Fever" data-hi="बुखार">Fever</span></div>
+        <div class="chip" onclick="toggleChip(this)" data-val="Body Pain|शरीर दर्द"><span class="t" data-en="Body Pain" data-hi="शरीर दर्द">Body Pain</span></div>
+        <div class="chip" onclick="toggleChip(this)" data-val="Acidity|एसिडिटी"><span class="t" data-en="Acidity" data-hi="एसिडिटी">Acidity</span></div>
+        <div class="chip" onclick="toggleChip(this)" data-val="Anxiety|घबराहट"><span class="t" data-en="Anxiety" data-hi="घबराहट">Anxiety</span></div>
+        <div class="chip" onclick="toggleChip(this)" data-val="Dizziness|चक्कर"><span class="t" data-en="Dizziness" data-hi="चक्कर">Dizziness</span></div>
+        <div class="chip" onclick="toggleChip(this)" data-val="Chest Pain|सीने में दर्द"><span class="t" data-en="Chest Pain" data-hi="सीने में दर्द">Chest Pain</span></div>
+      </div>
+      <label style="margin-top:14px;"><span class="t" data-en="Severity (0-10)" data-hi="गंभीरता (0-10)">Severity (0-10)</span></label>
+      <input type="number" id="severity" min="0" max="10" placeholder="0">
+      <label><span class="t" data-en="Additional notes" data-hi="अतिरिक्त नोट्स">Additional notes</span></label>
+      <textarea id="notes" placeholder="Describe how you feel... / विस्तार से बताएं..."></textarea>
+    </div>
+    <div class="card">
+      <div class="card-title">💊 <span class="t" data-en="Medication" data-hi="दवाई">Medication</span></div>
+      <label><span class="t" data-en="Medicines taken today" data-hi="आज ली गई दवाइयां">Medicines taken today</span></label>
+      <input type="text" id="medicine" placeholder="e.g. Metformin 500mg / मेटफॉर्मिन 500mg">
+      <label><span class="t" data-en="Did you take all medicines on time?" data-hi="क्या सभी दवाइयां समय पर लीं?">Did you take all medicines on time?</span></label>
+      <select id="medCompliance">
+        <option value="">-- Select / चुनें --</option>
+        <option value="Yes">✅ Yes / हाँ</option>
+        <option value="No">❌ No / नहीं</option>
+        <option value="Partial">⚠️ Partial / आंशिक</option>
+        <option value="No medicine">💊 No medicine today</option>
+      </select>
+    </div>
+    <button class="btn-primary" onclick="saveEntry()">💾 <span class="t" data-en="Save Today's Entry" data-hi="आज का लॉग सेव करें">Save Today's Entry</span></button>
+  </div>
+  <div class="page" id="page-analysis">
+    <div class="card">
+      <div class="card-title">🧠 <span class="t" data-en="AI Health Analysis" data-hi="AI स्वास्थ्य विश्लेषण">AI Health Analysis</span></div>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:16px;"><span class="t" data-en="Your AI health assistant will analyze your recent entries and identify patterns." data-hi="आपका AI सहायक आपकी प्रविष्टियों का विश्लेषण करेगा।">Your AI health assistant will analyze your recent entries.</span></p>
+      <button class="btn-primary" id="analyzeBtn" onclick="runAnalysis()">🔍 <span class="t" data-en="Analyze My Health" data-hi="मेरी सेहत का विश्लेषण करें">Analyze My Health</span></button>
+      <div id="analysisOutput"></div>
+    </div>
+  </div>
+  <div class="page" id="page-history">
+    <div id="statsRow"></div>
+    <div id="historyList"></div>
+  </div>
+  <div class="page" id="page-doctor">
+    <div class="card">
+      <div class="card-title">👨‍⚕️ <span class="t" data-en="Doctor Visit Summary" data-hi="डॉक्टर विजिट सारांश">Doctor Visit Summary</span></div>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:16px;"><span class="t" data-en="Generate a complete summary to show your doctor." data-hi="अपने डॉक्टर को दिखाने के लिए पूरा सारांश बनाएं।">Generate a complete summary to show your doctor.</span></p>
+      <button class="btn-primary" id="doctorBtn" onclick="generateDoctorSummary()">📋 <span class="t" data-en="Generate Doctor Summary" data-hi="डॉक्टर सारांश बनाएं">Generate Doctor Summary</span></button>
+      <div id="doctorOutput"></div>
+      <button class="btn-outline" onclick="window.print()" id="printBtn" style="display:none;">🖨️ <span class="t" data-en="Print / Share" data-hi="प्रिंट / शेयर करें">Print / Share</span></button>
+    </div>
+  </div>
+          </div>
+    <script>
+const GROQ_KEY='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';
+let lang='en';
+let selectedMood='';
+let selectedSymptoms=[];
+let entries=JSON.parse(localStorage.getItem('sehatai_entries')||'[]');
 
+document.getElementById('entryDate').valueAsDate=new Date();
+const savedCondition=localStorage.getItem('sehatai_condition');
+if(savedCondition)document.getElementById('condition').value=savedCondition;
+
+function saveCondition(){localStorage.setItem('sehatai_condition',document.getElementById('condition').value);}
+
+function toggleLang(){
+  lang=lang==='en'?'hi':'en';
+  document.getElementById('langBtn').textContent=lang==='en'?'हिंदी':'English';
+  document.querySelectorAll('.t').forEach(el=>{el.textContent=el.dataset[lang]||el.dataset.en;});
+}
+
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  if(name==='history')renderHistory();
+}
+
+function selectMood(el){
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedMood=lang==='hi'?el.dataset.moodhi:el.dataset.mood;
+}
+
+function toggleChip(el){
+  el.classList.toggle('selected');
+  const val=el.dataset.val.split('|')[lang==='hi'?1:0];
+  if(el.classList.contains('selected')){if(!selectedSymptoms.includes(val))selectedSymptoms.push(val);}
+  else{selectedSymptoms=selectedSymptoms.filter(s=>s!==val);}
+}
+
+function saveEntry(){
+  const date=document.getElementById('entryDate').value;
+  if(!date){alert('Please select a date / तारीख चुनें');return;}
+  const entry={
+    date,
+    condition:document.getElementById('condition').value,
+    mood:selectedMood||'Not selected',
+    sleep:document.getElementById('sleep').value,
+    energy:document.getElementById('energy').value,
+    foodMorning:document.getElementById('foodMorning').value,
+    foodAfternoon:document.getElementById('foodAfternoon').value,
+    foodNight:document.getElementById('foodNight').value,
+    water:document.getElementById('water').value,
+    exercise:document.getElementById('exercise').value,
+    symptoms:[...selectedSymptoms],
+    severity:document.getElementById('severity').value,
+    notes:document.getElementById('notes').value.trim(),
+    medicine:document.getElementById('medicine').value,
+    medCompliance:document.getElementById('medCompliance').value,
+  };
+  entries=entries.filter(e=>e.date!==date);
+  entries.unshift(entry);
+  entries.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  localStorage.setItem('sehatai_entries',JSON.stringify(entries));
+  selectedMood='';selectedSymptoms=[];
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+  ['sleep','energy','foodMorning','foodAfternoon','foodNight','water','exercise','severity','notes','medicine'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('medCompliance').value='';
+  alert(lang==='hi'?'✅ लॉग सेव हो गया!':'✅ Entry saved!');
+  showPage('history');
+}
+
+function renderHistory(){
+  const container=document.getElementById('historyList');
+  const statsEl=document.getElementById('statsRow');
+  if(entries.length===0){
+    statsEl.innerHTML='';
+    container.innerHTML='<div class="empty-state"><div class="icon">📋</div>No entries yet. Start logging!</div>';
+    return;
+  }
+  const avgSleep=(entries.filter(e=>e.sleep).reduce((a,e)=>a+parseFloat(e.sleep),0)/entries.filter(e=>e.sleep).length||0).toFixed(1);
+  const avgSev=(entries.filter(e=>e.severity).reduce((a,e)=>a+parseFloat(e.severity),0)/entries.filter(e=>e.severity).length||0).toFixed(1);
+  statsEl.innerHTML=`<div class="stats-row">
+    <div class="stat-box"><div class="stat-num">${entries.length}</div><div class="stat-label">Days Logged</div></div>
+    <div class="stat-box"><div class="stat-num">${avgSleep}h</div><div class="stat-label">Avg Sleep</div></div>
+    <div class="stat-box"><div class="stat-num">${avgSev}/10</div><div class="stat-label">Avg Severity</div></div>
+  </div>`;
+  container.innerHTML=entries.map(e=>`
+    <div class="entry-card">
+      <div class="entry-date">📅 ${e.date} | ${e.mood}</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:6px;">
+        ${e.sleep?'😴 '+e.sleep+'h ':''} ${e.water?'💧 '+e.water+'g ':''} ${e.exercise?'🏃 '+e.exercise+'min':''}
+      </div>
+      ${e.foodNight?`<div style="font-size:13px;margin-bottom:6px;">🌙 <strong>Night:</strong> ${escHtml(e.foodNight)}</div>`:''}
+      ${e.symptoms&&e.symptoms.length>0?`<div class="entry-tags">${e.symptoms.map(s=>`<span class="entry-tag">⚡ ${s}</span>`).join('')}</div>`:''}
+      ${e.notes?`<div style="font-size:13px;color:var(--ink);margin-top:8px;">📝 ${escHtml(e.notes)}</div>`:''}
+    </div>`).join('');
+}
+
+function escHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+    </script>
+    <script>
+async function runAnalysis(){
+  const btn=document.getElementById('analyzeBtn');
+  const output=document.getElementById('analysisOutput');
+  if(entries.length===0){
+    output.innerHTML='<div class="ai-box"><div class="ai-body">'+(lang==='hi'?'पहले कुछ दिन का डेटा लॉग करें।':'Please log a few days of data first.')+'</div></div>';
+    return;
+  }
+  btn.disabled=true;
+  output.innerHTML='<div class="loading"><div class="dot-pulse"><span></span><span></span><span></span></div>'+(lang==='hi'?'विश्लेषण हो रहा है...':'Analyzing your health data...')+'</div>';
+  const condition=document.getElementById('condition').value;
+  const dataText=entries.slice(0,14).map(e=>
+    `Date:${e.date}, Condition:${e.condition}, Mood:${e.mood}, Sleep:${e.sleep||'n/a'}h, Energy:${e.energy||'n/a'}/10, Morning food:${e.foodMorning||'n/a'}, Afternoon:${e.foodAfternoon||'n/a'}, Night food:${e.foodNight||'n/a'}, Water:${e.water||'n/a'}glasses, Exercise:${e.exercise||'n/a'}min, Symptoms:${e.symptoms?.join(',')||'none'}, Severity:${e.severity||0}/10, Notes:${e.notes||'none'}, Medicine:${e.medicine||'none'}, Compliance:${e.medCompliance||'n/a'}`
+  ).join('\n');
+  const prompt=`You are SehatAI, a compassionate AI Health Assistant. Patient condition: ${condition}.\n\nAnalyze this health data:\n${dataText}\n\nRespond in ${lang==='hi'?'Hindi (Devanagari)':'English'} with this structure:\n\n**HEALTH OVERVIEW**\n[2-3 sentences about overall health]\n\n**PATTERNS FOUND**\n[3-5 specific patterns connecting food, sleep, symptoms with dates/numbers]\n\n**POSSIBLE CAUSES**\n[2-3 possible reasons using "This could indicate..." Never diagnose definitively]\n\n**FOOD IMPACT**\n[Analyze night food vs next day symptoms specifically]\n\n**WHAT TO IMPROVE**\n[3-4 specific actionable suggestions]\n\n**DOCTOR ALERT**\n[Flag concerning symptoms. End with: "Please share this with your doctor."]`;
+  try{
+    const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_KEY},
+      body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:prompt}],max_tokens:1000})
+    });
+    const data=await res.json();
+    if(data.error)throw new Error(data.error.message);
+    const text=data.choices?.[0]?.message?.content||'';
+    output.innerHTML='<div class="ai-box"><div class="ai-header">🩺 SehatAI '+(lang==='hi'?'विश्लेषण':'Analysis')+'</div><div class="ai-body">'+escHtml(text)+'</div></div>';
+  }catch(err){
+    output.innerHTML='<div class="ai-box"><div class="ai-body">Error: '+escHtml(err.message)+'</div></div>';
+  }
+  btn.disabled=false;
+}
+
+async function generateDoctorSummary(){
+  const btn=document.getElementById('doctorBtn');
+  const output=document.getElementById('doctorOutput');
+  const printBtn=document.getElementById('printBtn');
+  if(entries.length===0){
+    output.innerHTML='<div class="ai-box"><div class="ai-body">'+(lang==='hi'?'पहले कुछ दिन का डेटा लॉग करें।':'Please log some data first.')+'</div></div>';
+    return;
+  }
+  btn.disabled=true;
+  output.innerHTML='<div class="loading"><div class="dot-pulse"><span></span><span></span><span></span></div>'+(lang==='hi'?'डॉक्टर सारांश बन रहा है...':'Generating doctor summary...')+'</div>';
+  const condition=document.getElementById('condition').value;
+  const dataText=entries.slice(0,30).map(e=>
+    `${e.date}: Mood=${e.mood}, Sleep=${e.sleep}h, Food(M=${e.foodMorning},A=${e.foodAfternoon},N=${e.foodNight}), Water=${e.water}g, Exercise=${e.exercise}min, Symptoms=[${e.symptoms?.join(',')}], Severity=${e.severity}/10, Notes=${e.notes}, Medicine=${e.medicine}, Compliance=${e.medCompliance}`
+  ).join('\n');
+  const prompt=`Generate a professional MEDICAL SUMMARY REPORT for a doctor visit.\n\nPatient condition: ${condition}\nData period: ${entries[entries.length-1]?.date} to ${entries[0]?.date}\nTotal days: ${entries.length}\n\nData:\n${dataText}\n\nGenerate in ${lang==='hi'?'Hindi':'English'}:\n\nPATIENT HEALTH REPORT - SehatAI\nGenerated: ${new Date().toLocaleDateString()}\n\nCHIEF COMPLAINTS:\n[Main symptoms, frequency, severity]\n\nSYMPTOM TIMELINE:\n[When symptoms appeared, triggers]\n\nLIFESTYLE DATA:\n- Average sleep, water, exercise, diet patterns\n\nPATTERNS & CORRELATIONS:\n[Food-symptom connections]\n\nMEDICATION HISTORY:\n[Medicines and compliance]\n\nPOINTS FOR DOCTOR:\n[Red flags needing medical evaluation]\n\nNOTE: Self-reported log by SehatAI. Verify with clinical examination.`;
+  try{
+    const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_KEY},
+      body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:prompt}],max_tokens:1200})
+    });
+    const data=await res.json();
+    if(data.error)throw new Error(data.error.message);
+    const text=data.choices?.[0]?.message?.content||'';
+    output.innerHTML='<div class="ai-box"><div class="ai-header">📋 '+(lang==='hi'?'डॉक्टर रिपोर्ट':'Doctor Report')+'</div><div class="ai-body">'+escHtml(text)+'</div></div>';
+    printBtn.style.display='block';
+  }catch(err){
+    output.innerHTML='<div class="ai-box"><div class="ai-body">Error: '+escHtml(err.message)+'</div></div>';
+  }
+  btn.disabled=false;
+}
+
+renderHistory();
+</script>
+</body>
+</html>
